@@ -1,3 +1,4 @@
+
 var scene, cam, robot, renderer, loader, globalLight;///init scene
 var keyW, keyA, keyS, keyD, o, p;;///movements;
 var robotRot;
@@ -33,13 +34,9 @@ function init(){
         alpha: true
     });
     
-    globalLight = new THREE.DirectionalLight(0xFFFFFF, 1.2, 180);
-    globalLight.position.set( 1, 1, 1 ); 
-    globalLight.castShadow = false; 
+    globalLight = new THREE.AmbientLight(0xFFFFFF, 1);
     scene.add(globalLight);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.renderReverseSided = true; 
-    renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
 }
 
@@ -78,12 +75,11 @@ document.addEventListener('keyup',e => _onKeyUp(e));
 
 
 function _onKeyDown(e){   
-    console.log(e);
     switch (e.key) {
         case 'w': keyW = true; break;
         case 's': keyS = true; break;
-        case 'o': o = true; break;
-        case 'p': p = true; break;               
+        case 'd': o = true; break;
+        case 'a': p = true; break;               
         default: break;
     }
 }
@@ -92,11 +88,12 @@ function _onKeyUp(e){
     switch (e.key) {
         case 'w': keyW = false; break;
         case 's': keyS = false; break;
-        case 'o': o = false; break;
-        case 'p': p = false; break;
+        case 'd': o = false; break;
+        case 'a': p = false; break;
         default: break;
     }
 }
+
 var speed = 0.4 ,rotationSpeed = 0.15;
 function Movement(){
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
@@ -107,10 +104,16 @@ function Movement(){
 
 }
 var offset = new THREE.Vector3(5,15,15);
+var newPosLerp;
 function animate(){ 
     renderer.render(scene, cam);
-    requestAnimationFrame(animate);
-    if(robot){ Movement(); cam.lookAt(robot.position); cam.position.copy(robot.position).add(offset);}
+    requestAnimationFrame(animate);    
+    if(robot){ 
+        Movement();
+        cam.position.lerp(robot.position, 0.7).add(offset);
+        cam.lookAt(robot.position); 
+        
+    }
 }
 
 init();
