@@ -1,11 +1,12 @@
 
-var scene, cam, robot, renderer, loader, globalLight;///init scene
+var scene, cam, robot, renderer, loader, globalLight, distance;///init scene
 var keyW, keyA, keyS, keyD, o, p;;///movements;
-var robotRot;
 //textures
 var loaderTexture;
 var robot_tileNormalMap, robot_tileHeighttMap, robot_tileRoughnessMap, robot_tileAOMap, robot_tileMetallicMap;
 var plane_tileNormalMap, plane_tileHeighttMap, plane_tileRoughnessMap, plane_tileAOMap, plane_tileBaseColor;
+var boxPosition = [[0, 0, 0], [40, 0, 0], [80, 0, 0]];
+var boxSize = [[10,10,10],[10,20,30],[20,10,30]];
 
 function LoadTextureOfRobot(){
     robot_tileNormalMap = loaderTexture.load('Materials/robot_mat/Metal_Damaged_001_SD/Metal_Damaged_001_normal.jpg'); 
@@ -57,6 +58,22 @@ function LoadGLTF(){
         robot.rotation.y += 0.1;
         scene.add(robot);
     } )
+}
+
+function CheckDistance(x,y,z){
+    if(robot) distance = Math.pow((x-robot.position.x), 2) + Math.pow((y-robot.position.y), 2) + Math.pow((z-robot.position.z), 2);
+    if(robot) console.log(Math.pow((x-robot.position.x), 2) + Math.pow((y-robot.position.y), 2) + Math.pow((z-robot.position.z), 2));
+}
+
+function CreateBox(xPos, yPos, zPos, xSize, ySize, zSize, hex){
+    var box = new THREE.BoxGeometry();
+    var boxMat = new THREE.MeshBasicMaterial();
+    var boxMesh = new THREE.Mesh(box, boxMat);
+ 
+    boxMesh.scale.set(xSize, ySize, zSize);
+    boxMesh.position.set(xPos, yPos, zPos);
+    boxMesh.material.color.setHex(hex);
+    scene.add(boxMesh);
 }
 
 function Plane(x,y,z){
@@ -112,7 +129,7 @@ function animate(){
         Movement();
         cam.position.lerp(robot.position, 0.7).add(offset);
         cam.lookAt(robot.position); 
-        
+        CheckDistance(boxPosition[0][0], boxPosition[0][1], boxPosition[0][2]);
     }
 }
 
@@ -120,7 +137,11 @@ init();
 if(loaderTexture){ LoadTextureOfGround(); LoadTextureOfRobot();}
 windowsEvents();
 LoadGLTF();
-Plane(0, -3, 0);
+Plane(0, -3, 0); 
+CreateBox(boxPosition[0][0], boxPosition[0][1], boxPosition[0][2], boxSize[0][0], boxSize[0][1], boxSize[0][2], 0xeb4034); 
+CreateBox(boxPosition[1][0], boxPosition[1][1], boxPosition[1][2], boxSize[1][0], boxSize[1][1], boxSize[1][2], 0x80b543 ); 
+CreateBox(boxPosition[2][0], boxPosition[2][1], boxPosition[2][2], boxSize[2][0], boxSize[2][1], boxSize[2][2], 0x7b3e9e ); 
+
 Plane(49.9,-3, 0);
 Plane(0,-3, 49.9);
 Plane(-49.9,-3, 49.9);
