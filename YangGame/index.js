@@ -6,8 +6,12 @@ var keyW, keyA, keyS, keyD, o, p;;///movements;
 var loaderTexture;
 var robot_tileNormalMap, robot_tileHeighttMap, robot_tileRoughnessMap, robot_tileAOMap, robot_tileMetallicMap;
 var plane_tileNormalMap, plane_tileHeighttMap, plane_tileRoughnessMap, plane_tileAOMap, plane_tileBaseColor;
-var boxPosition = [[0, 0, 0], [40, 0, 0], [80, 0, 0]];
-var boxSize = [[10,10,10],[10,10,10],[10,10,10]];
+var boxPosition = [[-10, -3, -10], [110, -3, -10], [-10, -3, 95]];
+var boxSize = [[20,1,20],[20,1,20],[20,1,20]];
+var light1, light2, light3;
+
+var bgTexture = new THREE.TextureLoader().load("Assets/images/5.jpeg");
+
 
 function LoadTextureOfRobot(){
     robot_tileNormalMap = loaderTexture.load('Materials/robot_mat/Metal_Damaged_001_SD/Metal_Damaged_001_normal.jpg'); 
@@ -37,11 +41,17 @@ function init(){
     renderer = new THREE.WebGLRenderer({
         alpha: true
     });
-    
-    globalLight = new THREE.AmbientLight(0xFFFFFF, 1);
+    renderer.setClearColor( 0x3d3736, 1);
+    globalLight = new THREE.AmbientLight(0xb8aead, 1);
+    light1 = new THREE.PointLight( 0x364f78, 5, 100 ); light1.position.set(-10, 10, -10); scene.add(light1);
+    light2 = new THREE.PointLight( 0x364f78, 5, 100 ); light2.position.set(110, 10, -10); scene.add(light2);
+    light3 = new THREE.PointLight( 0x364f78, 5, 100 ); light3.position.set(-10, 10, 95); scene.add(light3);
+    bgTexture.minFilter = THREE.NearestFilter;
+    scene.background = bgTexture;
     scene.add(globalLight);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    
 }
 
 function windowsEvents(){
@@ -58,7 +68,7 @@ function LoadGLTF(){
 
     loader.load('Robot.gltf', function ( gltf ) {
         robot = gltf.scene;
-        robot.position.set(40,0,10)
+        robot.position.set(0,0,0)
         scene.add(robot);
     } )
 }
@@ -116,52 +126,37 @@ function _onKeyUp(e){
     }
 }
 
-var speed = 0.4 ,rotationSpeed = 0.15;
+var speed = 0.4, rotationSpeed = 0.15;
+var rot = 0;
 function Movement(){
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    rot = robot.rotation.y
     if(keyW) {robot.translateZ(speed);} 
     if(keyS) {robot.translateZ(-speed);}
-    if(o){robot.rotation.y -= rotationSpeed};
-    if(p){robot.rotation.y += rotationSpeed};
+    if(o){
+        {robot.rotation.y -= rotationSpeed};
+        if(rot <= -6.3)
+            robot.rotation.y = 0;
+    }
+    
+    if(p){
+        {robot.rotation.y += rotationSpeed};
+        if(rot >= 0)
+            robot.rotation.y = -6.3;
+    }
 
 }
 
-function CheckColliderBox(box, dis){   
-    if(CheckDistance(boxPosition[box][0], boxPosition[box][1], boxPosition[box][2]) < dis) 
-        robot.position.set(robot.position.x+0.5, boxPosition[box][1], robot.position.z+0.5); 
+function CheckColliderBox(x, z){   
+
+}
+
+function checkRot() {
+    return (robot.rotation.y < -3 && robot.rotation.y > -6.3);;
 }
 
 var offset = new THREE.Vector3(5,15,15);
 var newPosLerp;
-function animate(){ 
-    renderer.render(scene, cam);
-    requestAnimationFrame(animate);    
-    if(robot){ 
-        Movement();
-        cam.position.lerp(robot.position, 0.7).add(offset);
-        cam.lookAt(robot.position); 
-        console.log(robot.position);
-        CheckColliderBox(0, 40); CheckColliderBox(1, 40); CheckColliderBox(2,40);
-        //CheckDistance(boxPosition[0][0], boxPosition[0][1], boxPosition[0][2]);
-        //CheckDistance(boxPosition[1][0], boxPosition[1][1], boxPosition[1][2]);
-        //CheckDistance(boxPosition[2][0], boxPosition[2][1], boxPosition[2][2]);
-       // console.log(CheckDistance(boxPosition[1][0], boxPosition[1][1], boxPosition[1][2]));
-    }
-    
-}
 
-init();
-if(loaderTexture){ LoadTextureOfGround(); LoadTextureOfRobot();}
-windowsEvents();
-LoadGLTF();
-Plane(0, -3, 0); 
-box1 = CreateBox(boxPosition[0][0], boxPosition[0][1], boxPosition[0][2], boxSize[0][0], boxSize[0][1], boxSize[0][2], 0xeb4034); collectionBox.push(box1);
-box2 = CreateBox(boxPosition[1][0], boxPosition[1][1], boxPosition[1][2], boxSize[1][0], boxSize[1][1], boxSize[1][2], 0x80b543 ); collectionBox.push(box2);
-box3 = CreateBox(boxPosition[2][0], boxPosition[2][1], boxPosition[2][2], boxSize[2][0], boxSize[2][1], boxSize[2][2], 0x7b3e9e ); collectionBox.push(box3);
 
-Plane(49.9,-3, 0);
-Plane(0,-3, 49.9);
-Plane(-49.9,-3, 49.9);
-Plane(-98.9,-3, 49.9);
-Plane(98.8,-3, 0);
-animate();
+
