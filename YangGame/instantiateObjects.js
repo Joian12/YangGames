@@ -12,9 +12,20 @@ function instantiate(){
 }
 
 function goToPage(x,y,z, name){
-    if(CheckDistance(x,y,z) < 240 && enter == true && name == "github.html") {setTimeout(function() {window.location.href = "github.html";}, 2000); speed = 0; rotationSpeed = 0}
-    if(CheckDistance(x,y,z) < 240 && enter == true && name == "gameproject.html") {setTimeout(function() {window.location.href = "gameproject.html";}, 2000); speed = 0; rotationSpeed = 0}
-    if(CheckDistance(x,y,z) < 240 && enter == true && name == "ModelPage.html") {setTimeout(function() {window.location.href = "ModelPage.html";}, 2000); speed = 0; rotationSpeed = 0}
+    if(CheckDistance(x,y,z) < 240 && enter == true && name == "github.html") {
+        setTimeout(function() {window.location.href = "github.html";}, 2000); 
+        speed = 0; 
+        rotationSpeed = 0;
+    }
+    if(CheckDistance(x,y,z) < 240 && enter == true && name == "gameproject.html") {
+        setTimeout(function() {window.location.href = "gameproject.html";}, 2000); 
+        speed = 0; 
+        rotationSpeed = 0;
+    }
+    if(CheckDistance(x,y,z) < 240 && enter == true && name == "ModelPage.html") {
+        setTimeout(function() {window.location.href = "ModelPage.html";}, 2000); 
+        speed = 0; rotationSpeed = 0;
+    }
 }
 
 function checkBoundary(){
@@ -34,27 +45,48 @@ function animate(){
         cam.position.lerp(robot.position, 0.1).add(offset);
         cam.lookAt(robot.position); 
         checkBoundary();
+    }
+
+        if(CheckDistance(boxPosition[0][0],boxPosition[0][1],boxPosition[0][2]) < 240) {
+            setTimeout(function(){sign1.scale.lerp(new THREE.Vector3(5,5,5), 0.3);1000})  
+            box1.scale.lerp(new THREE.Vector3(0,0,0),0.3);
+        }
+        else {
+            setTimeout(function(){sign1.scale.lerp(new THREE.Vector3(0,0,0), 0.3);1000})  
+            box1.scale.lerp(new THREE.Vector3(10,10,10),0.3);
+            
+        }
         goToPage(boxPosition[0][0],boxPosition[0][1],boxPosition[0][2], gthub);
+ 
+
+        if(CheckDistance(boxPosition[1][0],boxPosition[1][1],boxPosition[1][2]) < 240) {
+            setTimeout(function(){sign2.scale.lerp(new THREE.Vector3(5,5,5), 0.3);1000})  
+            box2.scale.lerp(new THREE.Vector3(0,0,0),0.3);
+        }
+        else {
+            setTimeout(function(){sign2.scale.lerp(new THREE.Vector3(0,0,0), 0.3);1000})  
+            box2.scale.lerp(new THREE.Vector3(10,10,10),0.3);
+        }
         goToPage(boxPosition[1][0],boxPosition[1][1],boxPosition[1][2], gameproj);
+   
+        if(CheckDistance(boxPosition[2][0],boxPosition[2][1],boxPosition[2][2]) < 240) {
+            setTimeout(function(){sign3.scale.lerp(new THREE.Vector3(5,5,5), 0.3);1000})  
+            box3.scale.lerp(new THREE.Vector3(0,0,0),0.3);
+        }
+        else {
+            setTimeout(function(){sign3.scale.lerp(new THREE.Vector3(0,0,0), 0.3);1000})  
+            box3.scale.lerp(new THREE.Vector3(10,10,10),0.3);
+        }
         goToPage(boxPosition[2][0],boxPosition[2][1],boxPosition[2][2], modelPage);
-        
-    }
+    
 
-    console.log(sign1);
-    if(sign1){
-        sign1.rotation.y += 0.1;
-    }
-    if(sign2){
-        sign2.rotation.y += 0.1;
-    }
-
-    if(sign3){
-        sign3.rotation.y += 0.1;
-    }
+    box1.rotation.y += 0.1;
+    box2.rotation.y += 0.1;
+    box3.rotation.y += 0.1;
 }
 
 init();
-if(loaderTexture){ LoadTextureOfGround(); LoadTextureOfRobot(); LoadTextureOfSignBoard_1(); LoadTextureOfSignBoard_2(); LoadTextureOfSignBoard_3();}
+if(loaderTexture){ LoadTextureOfGround(); LoadTextureOfRobot(); LoadTextureOfSignBoard_1(); LoadTextureOfSignBoard_2(); LoadTextureOfSignBoard_3(); LoadMatTexture();}
 windowsEvents();
 LoadGLTF();
 SignGLTF(sign_1, 5, 5, 5, -6, 5,-8, sign_1_tileBaseColor, sign_1_tileNormalmap, sign_1_tileRoughnessMap);
@@ -67,7 +99,7 @@ box3 = CreateBox(boxPosition[2][0], boxPosition[2][1], boxPosition[2][2], boxSiz
 Plane(49.9*0, -3, 0); Plane(49.9*1, -3, 40.9*1); Plane(49.9*1, -3, 40.9*2);
 Plane(49.9*1, -3, 0); Plane(49.9*2, -3, 40.9*1); Plane(49.9*2, -3, 40.9*2);
 Plane(49.9*2, -3, 0);
-Plane(0, -3, 40.9*0);
-Plane(0, -3, 40.9*1);
+Plane(0, -3, 40.9*0); PlaneWall(99.76, -27, 106, 0,0,0); PlaneWall(51, -27, 106,0,0,0); PlaneWall(2, -27, 106,0,0,0);
+Plane(0, -3, 40.9*1); PlaneWall(124, -27, 81.8, 0, Math.PI/2,0); PlaneWall(124, -27, 40, 0, Math.PI/2,0); PlaneWall(124, -27, 0, 0, Math.PI/2,0);
 Plane(0, -3, 40.9*2);
 animate();

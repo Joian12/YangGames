@@ -9,14 +9,23 @@ var plane_tileNormalMap, plane_tileHeighttMap, plane_tileRoughnessMap, plane_til
 var sign_1_tileNormalmap, sign_1_tileHeightMap, sign_1_tileRoughnessMap, sign_1_tileAOIMap, sign_1_tileBaseColor;
 var sign_2_tileNormalmap, sign_2_tileHeightMap, sign_2_tileRoughnessMap, sign_2_tileAOIMap, sign_2_tileBaseColor;
 var sign_3_tileNormalmap, sign_3_tileHeightMap, sign_3_tileRoughnessMap, sign_3_tileAOIMap, sign_3_tileBaseColor;
-var boxPosition = [[-10, -3, -10], [110, -3, -10], [-10, -3, 95]];
-var boxSize = [[20,1,20],[20,1,20],[20,1,20]];
-var light1, light2, light3;
+var matTileNormalMap, mapTileHeightMap, mapTileRoughnessMap, mapTileAOMap, mapTileBaseColor;
+var boxPosition = [[-6, 5, -12], [110, 5, -12], [-10, 5, 91.5]];
+var boxSize = [[10,10,10],[10,10,10],[10,10,10]];
+var light1, light2, light3, aoLight;
 var sign1, sign2, sign3, loaderSign;
 
 
-var bgTexture = new THREE.TextureLoader().load("Assets/images/5.jpeg");
+var bgTexture = new THREE.TextureLoader().load("Assets/images/peach.jpg");
 var sign_1 = 'GLTFModels/Sign/SignBoard.gltf';
+
+function LoadMatTexture(){
+    matTileNormalMap = loaderTexture.load('Materials/plane_mat/boxes/Clay/Clay_001_normal.jpg');
+    mapTileHeightMap = loaderTexture.load('Materials/plane_mat/boxes/Clay/Clay_001_height.png');
+    mapTileRoughnessMap = loaderTexture.load('Materials/plane_mat/boxes/Clay/Clay_001_roughness.jpg');
+    mapTileAOMap = loaderTexture.load('Materials/plane_mat/boxes/Clay/Clay_001_ambientOcclusion.jpg');
+    mapTileBaseColor = loaderTexture.load('Materials/plane_mat/boxes/Clay/Clay_001_basecolor.jpg');
+}
 
 function LoadTextureOfRobot(){
     robot_tileNormalMap = loaderTexture.load('Materials/robot_mat/Metal_Damaged_001_SD/Metal_Damaged_001_normal.jpg'); 
@@ -27,11 +36,11 @@ function LoadTextureOfRobot(){
 }
 
 function LoadTextureOfGround(){
-    plane_tileNormalMap = loaderTexture.load('Materials/plane_mat/Stylized_Stone_Floor_003_SD/Stylized_Stone_Floor_003_normal.jpg');
-    plane_tileHeighttMap = loaderTexture.load('Materials/plane_mat/Stylized_Stone_Floor_003_SD/Stylized_Stone_Floor_003_height.png');
-    plane_tileRoughnessMap = loaderTexture.load('Materials/plane_mat/Stylized_Stone_Floor_003_SD/Stylized_Stone_Floor_003_roughness.jpg');
-    plane_tileAOMap = loaderTexture.load('Materials/plane_mat/Stylized_Stone_Floor_003_SD/Stylized_Stone_Floor_003_ambientOcclusion.jpg');
-    plane_tileBaseColor = loaderTexture.load('Materials/plane_mat/Stylized_Stone_Floor_003_SD/Stylized_Stone_Floor_003_basecolor.jpg'); 
+    plane_tileNormalMap = loaderTexture.load('Materials/plane_mat/Green/Leather_012_SD/Leather_011_normal.jpg');
+    plane_tileHeighttMap = loaderTexture.load('Materials/plane_mat/Green/Leather_012_SD/Leather_011_height.png');
+    plane_tileRoughnessMap = loaderTexture.load('Materials/plane_mat/Green/Leather_012_SD/Leather_011_roughness.jpg');
+    plane_tileAOMap = loaderTexture.load('Materials/plane_mat/Green/Leather_012_SD/Leather_011_ambientOcclusion.jpg');
+    plane_tileBaseColor = loaderTexture.load('Materials/plane_mat/Green/Leather_012_SD/Leather_011_basecolor.jpg'); 
 }
 
 function LoadTextureOfSignBoard_1(){
@@ -72,14 +81,18 @@ function init(){
     });
     renderer.setClearColor( 0x3d3736, 1);
     globalLight = new THREE.AmbientLight(0xb8aead, 1);
-    light1 = new THREE.PointLight( 0x364f78, 5, 100); light1.position.set(-10, 10, -10); scene.add(light1);
-    light2 = new THREE.PointLight( 0x364f78, 5, 100 ); light2.position.set(110, 10, -10); scene.add(light2);
-    light3 = new THREE.PointLight( 0x364f78, 5, 100 ); light3.position.set(-10, 10, 95); scene.add(light3);
+    light1 = new THREE.PointLight( 0xeb4034, 5, 100, 1); light1.position.set(-10, 20, -10); scene.add(light1);
+    light2 = new THREE.PointLight( 0x80b543, 2, 100, 1 ); light2.position.set(110, 20, -10); scene.add(light2);
+    light3 = new THREE.PointLight( 0x7b3e9e, 5, 100, 1); light3.position.set(-10, 20, 95); scene.add(light3);
+    aoLight = new THREE.AmbientLight(0xa3804b, 0.3); scene.add(aoLight);
     bgTexture.minFilter = THREE.NearestFilter;
     scene.background = bgTexture;
     scene.add(globalLight);
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    if(box1)createjs.Tween.get(box1.material, {loop: true}).to({opacity:1},500).wait(1500).to({opacity:0},500);
 }
 
 function windowsEvents(){
@@ -103,7 +116,7 @@ function LoadGLTF(){
                 node.material.roughness = plane_tileRoughnessMap;
             }
         });
-        robot.position.set(0,0,0);
+        robot.position.set(20,0,20);
         scene.add(robot);
     } )
 }

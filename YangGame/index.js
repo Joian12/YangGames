@@ -5,25 +5,35 @@ function CheckDistance(x,y,z){
 }
 
 function CreateBox(xPos, yPos, zPos, xSize, ySize, zSize, hex){
-    var box = new THREE.BoxGeometry();
+    var box = new THREE.BoxBufferGeometry();
     var boxMat = new THREE.MeshBasicMaterial();
     var boxMesh = new THREE.Mesh(box, boxMat);
- 
+    boxMesh.material.color.setHex(hex);
     boxMesh.scale.set(xSize, ySize, zSize);
     boxMesh.position.set(xPos, yPos, zPos);
-    boxMesh.material.color.setHex(hex);
     scene.add(boxMesh);
     return boxMesh;
 }
 
 function Plane(x,y,z){
-    var plane = new THREE.PlaneGeometry(1 ,1, 20 ,20);
+    var plane = new THREE.PlaneGeometry(1 ,1, 1 ,1);
     var planeMat = new THREE.MeshStandardMaterial({map: plane_tileBaseColor, normalMap: plane_tileNormalMap, displacementMap: plane_tileHeighttMap});//THREE.MeshBasicMaterial({color: 0x87ceeb,side: THREE.DoubleSide});
     var planeMesh = new THREE.Mesh(plane, planeMat);
     plane.receiveShadow = true;
     planeMesh.scale.set(50,50,1);
     planeMesh.rotation.x =  - Math.PI / 2;
     planeMesh.position.set(x,y,z);
+    scene.add(planeMesh)
+}
+
+function PlaneWall(x,y,z, rotX, rotY, rotZ){
+    var plane = new THREE.PlaneGeometry(1 ,1, 20 ,20);
+    var planeMat = new THREE.MeshStandardMaterial({map: plane_tileBaseColor, normalMap: plane_tileNormalMap, displacementMap: plane_tileHeighttMap});//THREE.MeshBasicMaterial({color: 0x87ceeb,side: THREE.DoubleSide});
+    var planeMesh = new THREE.Mesh(plane, planeMat);
+    plane.receiveShadow = true;
+    planeMesh.scale.set(50,50,1);
+    planeMesh.position.set(x,y,z);
+    planeMesh.rotation.set(rotX, rotY, rotZ);
     scene.add(planeMesh)
 }
     
@@ -55,7 +65,7 @@ function _onKeyUp(e){
 var speed = 0.4, rotationSpeed = 0.15;
 var rot = 0;
 function Movement(){
-    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    
     rot = robot.rotation.y
     if(keyW) {robot.translateZ(speed);} 
     if(keyS) {robot.translateZ(-speed);}
